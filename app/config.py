@@ -8,3 +8,4 @@ root_dir = dir_path[:-3]
 config = Config(f'{root_dir}.env')
 
 DATABASE_URL = f'sqlite:///{root_dir}' + config('DB_NAME', cast=str)
+SECRET_KEY = config('SECRET_KEY', cast=Secret)

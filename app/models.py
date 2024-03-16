@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
-from sqlalchemy.exc.declarative import declarative_base
 
 from config import DATABASE_URL
 
@@ -15,11 +15,12 @@ def connect_db():
     return session
 
 
-class User:
+class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     email = Column(String)
+    password = Column(String)
     first_name = Column(String)
     last_name = Column(String)
     nickname = Column(String)
@@ -37,7 +38,7 @@ class Film(Base):
 
 
 class AuthToken(Base):
-    __tablename__ = 'auth.token'
+    __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
