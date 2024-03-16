@@ -2,8 +2,8 @@ import uuid
 from fastapi import APIRouter, Body, Depends, HTTPException
 from starlette import status
 
-from forms import UserLoginForm, UserCreateForm
-from models import connect_db, User, AuthToken
+from app.forms import UserLoginForm, UserCreateForm
+from app.models import connect_db, User, AuthToken
 from app.utils import get_password_hash
 from app.auth import check_auth_token
 
