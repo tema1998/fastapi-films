@@ -5,6 +5,7 @@ from starlette import status
 from forms import UserLoginForm, UserCreateForm
 from models import connect_db, User, AuthToken
 from app.utils import get_password_hash
+from app.auth import check_auth_token
 
 router = APIRouter()
 
@@ -18,7 +19,7 @@ def login(user_form: UserLoginForm = Body(..., embed=True), database=Depends(con
     auth_token = AuthToken(token=str(uuid.uuid4()), user_id=user.id)
     database.add(auth_token)
     database.commit()
-    return {'status': 'OK'}
+    return {'auth_token': auth_token.token}
 
 
 @router.post('/user', name='user:create')
@@ -37,3 +38,10 @@ def create_user(user: UserCreateForm = Body(..., embed=True), database=Depends(c
     database.add(new_user)
     database.commit()
     return {'user_id': new_user.id}
+
+
+@router.get('/user', name='user:get')
+def get_user(token: AuthToken = Depends(check_auth_token), database=Depends(connect_db)):
+    user = database.query(User).filter(User.id == token.user_id).one_or_none()
+
+    return {'id': user.id, 'email': user.email, 'nickname': user.nickname}

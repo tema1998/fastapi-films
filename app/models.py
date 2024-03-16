@@ -31,7 +31,7 @@ class Film(Base):
     __tablename__ = 'films'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     title = Column(String)
     description = Column(String)
     created_at = Column(String, default=datetime.utcnow())
@@ -41,6 +41,6 @@ class AuthToken(Base):
     __tablename__ = 'auth_token'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     token = Column(String)
     created_at = Column(String, default=datetime.utcnow())
