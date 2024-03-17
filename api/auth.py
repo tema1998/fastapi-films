@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from app.models import  AuthToken, connect_db
+from db.models import  AuthToken
+from db.session import connect_db
 
 
 def check_auth_token(token: str, database=Depends(connect_db)):

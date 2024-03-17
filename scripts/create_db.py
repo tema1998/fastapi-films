@@ -1,12 +1,14 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import text, create_engine
 from sqlalchemy.orm import Session
 
-from app.config import DATABASE_URL
+from api.config import DATABASE_URL
 
 
 def main():
     engine = create_engine(DATABASE_URL)
     session = Session(bind=engine.connect())
+    # engine = create_async_engine(DATABASE_URL, future=True, echo=True)
+    # async_session = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 
     session.execute(text("""create table users(
     id integer not null primary key,

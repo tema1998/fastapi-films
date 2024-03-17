@@ -1,31 +1,20 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
 
-from app.config import DATABASE_URL
 
 Base = declarative_base()
-
-
-def connect_db():
-    engine = create_engine(DATABASE_URL, connect_args={})
-    session = Session(bind=engine.connect())
-    return session
 
 
 class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    email = Column(String)
-    password = Column(String)
-    first_name = Column(String)
-    last_name = Column(String)
-    nickname = Column(String)
-    created_at = Column(String, default=datetime.utcnow())
+    username = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow())
 
 
 class Film(Base):

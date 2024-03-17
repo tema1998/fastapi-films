@@ -1,14 +1,18 @@
 version: '3'
 
 services:
-  app:
-    build: .
-    container_name: fastapi-app
-    ports:
-      - "8000:8000"
-    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000"
-    env_file:
-      - .env
+#  app:
+#    build: .
+#    container_name: fastapi-app
+#    ports:
+#      - "8000:8000"
+#    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000"
+#    env_file:
+#      - .env
+#    depends_on:
+#      - db
+#    networks:
+#      - custom
   db:
     container_name: db
     image: postgres:15
