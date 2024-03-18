@@ -13,4 +13,20 @@ class UserCreate(BaseModel):
     email: str
 
 
+class TunedModel(BaseModel):
+    class Config:
+        """Pydantic will convert to JSON even not dict"""
+        orm_mode = True
+
+
+class ShowFilm(BaseModel):
+    id: int
+    title: str
+    description: str
+    created_at: str
+    censor_age: str
+    actors: str
+    directors: str
+    genres: str
+    link: str
 

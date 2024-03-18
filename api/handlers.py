@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from api.models import UserCreate
-from db.dals import UserDAL
+from api.models import UserCreate, ShowFilm
+from db.dals import UserDAL, FilmDAL
 from db.models import User
 from db.session import connect_db
 from api.auth import check_auth_token
@@ -51,8 +51,30 @@ async def create_user(body: UserCreate, db: AsyncSession = Depends(connect_db)):
     return await _create_new_user(body, db)
 
 
-# @router.get('/user', name='user:get')
-# def get_user(token: AuthToken = Depends(check_auth_token), database=Depends(connect_db)):
-#     user = database.query(User).filter(User.id == token.user_id).one_or_none()
-#
-#     return {'id': user.id, 'email': user.email, 'nickname': user.nickname}
+async def _get_film_by_id(film_id, db):
+    async with db as session:
+        async with session.begin():
+            film_dal = FilmDAL(session)
+            film = await film_dal.get_film_by_id(
+                film_id=film_id
+            )
+            if film is not None:
+                return ShowFilm(
+                    id = film.id,
+                    title = film.title,
+                    description = film.description,
+                    created_at = film.created_at,
+                    censor_age = film.censor_age,
+                    actors = film.actors,
+                    directors = film.directors,
+                    genres = film.genres,
+                    link = film.link
+                )
+
+
+@router.get('/', response_model=ShowFilm)
+async def get_film_by_id(film_id: int, db: AsyncSession = Depends(connect_db)):
+    film = await _get_film_by_id(film_id, db)
+    if film is None:
+        raise HTTPException(status_code=404, detail=f"Film with id={film_id} not found")
+    return film
