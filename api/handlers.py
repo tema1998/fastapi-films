@@ -1,4 +1,7 @@
+import json
+
 from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -60,15 +63,15 @@ async def _get_film_by_id(film_id, db):
             )
             if film is not None:
                 return ShowFilm(
-                    id = film.id,
-                    title = film.title,
-                    description = film.description,
-                    created_at = film.created_at,
-                    censor_age = film.censor_age,
-                    actors = film.actors,
-                    directors = film.directors,
-                    genres = film.genres,
-                    link = film.link
+                    id=film.id,
+                    title=film.title,
+                    description=film.description,
+                    created_at=film.created_at,
+                    censor_age=film.censor_age,
+                    actors=jsonable_encoder(film.actors),
+                    directors=jsonable_encoder(film.directors),
+                    genres=film.genres,
+                    link=film.link
                 )
 
 

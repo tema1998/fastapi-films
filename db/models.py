@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -61,7 +61,7 @@ class Film(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    created_at = Column(String, default=datetime.utcnow())
+    created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
     actors = relationship('Actor', secondary=film_actor, backref='films_of_actor', lazy="selectin")
     directors = relationship('Director', secondary=film_director, backref='films_of_director', lazy="selectin")
