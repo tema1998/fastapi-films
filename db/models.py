@@ -63,8 +63,8 @@ class Film(Base):
     description = Column(String)
     created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
-    actors = relationship('Actor', secondary=film_actor, backref='films_of_actor', lazy="selectin")
-    directors = relationship('Director', secondary=film_director, backref='films_of_director', lazy="selectin")
+    actors = relationship('Actor', secondary=film_actor, backref='films_of_actor')
+    directors = relationship('Director', secondary=film_director, backref='films_of_director')
     genres = Column(Integer, ForeignKey('genres.id'))
     link = Column(String)
 
@@ -75,10 +75,10 @@ class Series(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    created_at = Column(String, default=datetime.utcnow())
+    created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
-    actors = relationship('Actor', secondary=series_actor, backref='series_of_actor', lazy="selectin")
-    directors = relationship('Director', secondary=series_director, backref='series_of_director', lazy="selectin")
+    actors = relationship('Actor', secondary=series_actor, backref='series_of_actor')
+    directors = relationship('Director', secondary=series_director, backref='series_of_director')
     genres = Column(Integer, ForeignKey('genres.id'))
     link = Column(String)
 
@@ -89,8 +89,8 @@ class Actor(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    starred_in_films = relationship('Film', secondary=film_actor, backref='film_actors', lazy="selectin")
-    starred_in_series = relationship('Series', secondary=series_actor, backref='series_actors', lazy="selectin")
+    starred_in_films = relationship('Film', secondary=film_actor, backref='film_actors')
+    starred_in_series = relationship('Series', secondary=series_actor, backref='series_actors')
 
 
 class Director(Base):
@@ -99,8 +99,8 @@ class Director(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    made_films = relationship('Film', secondary=film_director, backref='film_directors', lazy="selectin")
-    made_series = relationship('Series', secondary=series_director, backref='series_directors', lazy="selectin")
+    made_films = relationship('Film', secondary=film_director, backref='film_directors')
+    made_series = relationship('Series', secondary=series_director, backref='series_directors')
 
 
 class Genre(Base):

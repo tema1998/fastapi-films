@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from api.models import UserCreate, ShowFilm
-from db.dals import UserDAL, FilmDAL
+from api.models import UserCreate, ShowFilm, ShowSeries, ShowFilmSchema, ShowSeriesSchema
+from db.dals import UserDAL, FilmDAL, SeriesDAL
 from db.models import User
 from db.session import connect_db
 from api.auth import check_auth_token
@@ -62,7 +62,7 @@ async def _get_film_by_id(film_id, db):
                 film_id=film_id
             )
             if film is not None:
-                return ShowFilm(
+                return ShowFilmSchema(
                     id=film.id,
                     title=film.title,
                     description=film.description,
@@ -75,9 +75,38 @@ async def _get_film_by_id(film_id, db):
                 )
 
 
-@router.get('/', response_model=ShowFilm)
+@router.get('/films', response_model=ShowFilmSchema)
 async def get_film_by_id(film_id: int, db: AsyncSession = Depends(connect_db)):
     film = await _get_film_by_id(film_id, db)
     if film is None:
         raise HTTPException(status_code=404, detail=f"Film with id={film_id} not found")
     return film
+
+
+async def _get_series_by_id(series_id, db):
+    async with db as session:
+        async with session.begin():
+            series_dal = SeriesDAL(session)
+            series = await series_dal.get_series_by_id(
+                series_id=series_id
+            )
+            if series is not None:
+                return ShowSeriesSchema(
+                    id=series.id,
+                    title=series.title,
+                    description=series.description,
+                    created_at=series.created_at,
+                    censor_age=series.censor_age,
+                    actors=jsonable_encoder(series.actors),
+                    directors=jsonable_encoder(series.directors),
+                    genres=series.genres,
+                    link=series.link
+                )
+
+
+@router.get('/series', response_model=ShowSeriesSchema)
+async def get_series_by_id(series_id: int, db: AsyncSession = Depends(connect_db)):
+    series = await _get_series_by_id(series_id, db)
+    if series is None:
+        raise HTTPException(status_code=404, detail=f"Film with id={series_id} not found")
+    return series

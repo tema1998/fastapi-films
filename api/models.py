@@ -45,10 +45,32 @@ class ShowFilm(BaseModel):
     description: str
     created_at: datetime.datetime
     censor_age: str
-    actors: List[ActorsBase]
-    directors: List[DirectorsBase]
+
     genres: int
     link: str
 
     class Config:
         orm_mode = True
+
+
+class ShowFilmSchema(ShowFilm):
+    actors: List[ActorsBase]
+    directors: List[DirectorsBase]
+
+
+class ShowSeries(BaseModel):
+    id: int
+    title: str
+    description: str
+    created_at: datetime.datetime
+    censor_age: str
+    genres: int
+    link: str
+
+    class Config:
+        orm_mode = True
+
+
+class ShowSeriesSchema(ShowSeries):
+    actors: List[ActorsBase]
+    directors: List[DirectorsBase]
