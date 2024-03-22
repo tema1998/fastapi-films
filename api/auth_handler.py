@@ -19,13 +19,12 @@ from db.session import connect_db
 auth_router = APIRouter()
 
 
-async def _get_user_by_email_for_auth(email:str, db: AsyncSession):
-    async with db as session:
-        async with session.begin():
-            user_dal = UserDAL(session)
-            return await user_dal.get_user_by_email(
-                email=email,
-            )
+async def _get_user_by_email_for_auth(email:str, session: AsyncSession):
+    async with session.begin():
+        user_dal = UserDAL(session)
+        return await user_dal.get_user_by_email(
+            email=email,
+        )
 
 
 async def authenticate_user(email: str, password: str, db: AsyncSession) -> Union[User, None]:
@@ -82,25 +81,24 @@ async def sample_endpoint_under_jwt(current_user: User = Depends(get_current_use
     return {"Success": True, "current_user": current_user}
 
 
-async def _create_new_user(body: UserCreate, db):
-    async with db as session:
-        async with session.begin():
-            exists_username_query = select(User.id).filter(User.username == body.username)
-            exists_username = await session.execute(exists_username_query)
-            if exists_username.one_or_none():
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Username already exists')
-            exists_email_query = select(User.id).filter(User.email == body.email)
-            exists_email = await session.execute(exists_email_query)
-            if exists_email.one_or_none():
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Email already exists')
+async def _create_new_user(body: UserCreate, session):
+    async with session.begin():
+        exists_username_query = select(User.id).filter(User.username == body.username)
+        exists_username = await session.execute(exists_username_query)
+        if exists_username.one_or_none():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Username already exists')
+        exists_email_query = select(User.id).filter(User.email == body.email)
+        exists_email = await session.execute(exists_email_query)
+        if exists_email.one_or_none():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Email already exists')
 
-            user_dal = UserDAL(session)
-            user = await user_dal.create_user(
-                username=body.username,
-                password=body.password,
-                email=body.email
-            )
-            return {'user_id': user.id}
+        user_dal = UserDAL(session)
+        user = await user_dal.create_user(
+            username=body.username,
+            password=body.password,
+            email=body.email
+        )
+        return {'user_id': user.id}
 
 
 @auth_router.post('/user', name='user:create')
