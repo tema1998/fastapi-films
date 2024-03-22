@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from api.handlers import router
 
 
@@ -9,3 +9,5 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+
+router = APIRouter()

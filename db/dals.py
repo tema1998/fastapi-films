@@ -2,6 +2,7 @@
 from sqlalchemy import Integer, select
 from sqlalchemy.orm import joinedload
 
+from api.utils import Hasher
 from db.models import User, Film, Series
 
 
@@ -12,12 +13,19 @@ class UserDAL:
     async def create_user(self, username: str, password: str, email: str):
         new_user = User(
             username=username,
-            password=password,
+            password=Hasher.get_password_hash(password),
             email=email,
         )
         self.db_session.add(new_user)
         await self.db_session.flush()
         return new_user
+
+    async def get_user_by_email(self, email: str):
+        query = select(User).where(User.email == email)
+        res = await self.db_session.execute(query)
+        user_row = res.fetchone()
+        if user_row is not None:
+            return user_row[0]
 
 
 class FilmDAL:

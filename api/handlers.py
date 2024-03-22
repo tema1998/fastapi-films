@@ -1,25 +1,69 @@
 import json
+import uuid
+from datetime import timedelta
+from typing import Union
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from jose import jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from api.models import UserCreate, ShowFilm, ShowSeries, ShowFilmSchema, ShowSeriesSchema
+import settings
+from api.models import UserCreate, ShowFilm, ShowSeries, ShowFilmSchema, ShowSeriesSchema, Token
+from api.utils import Hasher, create_access_token
 from db.dals import UserDAL, FilmDAL, SeriesDAL
-from db.models import User
+from db.models import User, AuthToken
 from db.session import connect_db
 from api.auth import check_auth_token
 
 router = APIRouter()
 
 
+async def _get_user_by_email_for_auth(email:str, db: AsyncSession):
+    async with db as session:
+        async with session.begin():
+            user_dal = UserDAL(session)
+            return await user_dal.get_user_by_email(
+                email=email,
+            )
+
+
+async def authenticate_user(email: str, password: str, db: AsyncSession) -> Union[User, None]:
+    user = await _get_user_by_email_for_auth(email=email, db=db)
+    if user is None:
+        print('not user')
+        return
+    if not Hasher.get_password_hash(password) == user.password:
+        print('not password')
+        return
+    return user
+
+
+@router.post('/token', response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(connect_db)):
+    user = await authenticate_user(form_data.username, form_data.password, db)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email, "other_custom_data": [1, 2, 3 ,4]}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+
 # @router.post('/login', name='user:login')
 # def login(user_form: UserLoginForm = Body(..., embed=True), database=Depends(connect_db)):
 #     user = database.query(User).filter(User.username == user_form.username).one_or_none()
-#     if not user or get_password_hash(user_form.password) != user.password:
+#     if not user or Hasher.get_password_hash(user_form.password) != user.password:
 #         return {'error': 'Email/password invalid'}
 #
 #     auth_token = AuthToken(token=str(uuid.uuid4()), user_id=user.id)
