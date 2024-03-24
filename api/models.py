@@ -43,6 +43,7 @@ class ShowFilm(BaseModel):
     id: int
     title: str
     description: str
+    image: str
     created_at: datetime.datetime
     censor_age: str
 
@@ -62,6 +63,7 @@ class ShowSeries(BaseModel):
     id: int
     title: str
     description: str
+    image: str
     created_at: datetime.datetime
     censor_age: str
     genres: int

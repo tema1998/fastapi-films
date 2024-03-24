@@ -60,6 +60,7 @@ class Film(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
+    image = Column(String)
     description = Column(String)
     created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
@@ -74,6 +75,7 @@ class Series(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
+    image = Column(String)
     description = Column(String)
     created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
