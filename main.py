@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter
-from api.handlers import core_router
+from api.core_handlers import core_router
 from api.auth_handler import auth_router
 
 
