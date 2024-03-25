@@ -50,3 +50,27 @@ class SeriesDAL:
         series_row = result.unique().fetchone()
         if series_row is not None:
             return series_row[0]
+
+
+class AllFilmsDAL:
+    def __init__(self, db_session):
+        self.db_session = db_session
+
+    async def get_films(self):
+        query = select(Film).options(joinedload(Film.actors)).options(joinedload(Film.directors))
+        result = await self.db_session.execute(query)
+        films = result.unique().fetchall()
+        if films is not None:
+            return films
+
+
+class AllSeriesDAL:
+    def __init__(self, db_session):
+        self.db_session = db_session
+
+    async def get_series(self):
+        query = select(Series).options(joinedload(Series.actors)).options(joinedload(Series.directors))
+        result = await self.db_session.execute(query)
+        series = result.unique().fetchall()
+        if series is not None:
+            return series
