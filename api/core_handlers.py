@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
-from api.actions.core import _get_series_by_id, _get_film_by_id, _get_all_films, _get_all_series, _get_films_by_genre
+from api.actions.core import _get_series_by_id, _get_film_by_id, _get_all_films, _get_all_series, _get_films_by_genre, \
+    _get_series_by_genre
 from api.models import ShowFilmOrSeriesSchema, ShowFilmOrSeriesShort
 from db.session import connect_db
 
@@ -47,3 +48,11 @@ async def get_films_by_genre(genre: str, db: AsyncSession = Depends(connect_db))
     if len(films) == 0:
         raise HTTPException(status_code=404, detail=f"There is no films by {genre} genre.")
     return films
+
+
+@core_router.get('/series_by_genre')
+async def get_series_by_genre(genre: str, db: AsyncSession = Depends(connect_db)):
+    series = await _get_series_by_genre(genre, db)
+    if len(series) == 0:
+        raise HTTPException(status_code=404, detail=f"There is no series by {genre} genre.")
+    return series

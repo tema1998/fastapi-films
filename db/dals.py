@@ -81,3 +81,10 @@ class AllSeriesDAL:
         series = result.unique().fetchall()
         if series is not None:
             return series
+
+    async def get_series_by_genre(self, genre: str):
+        query = select(Series).join(Genre).filter(Genre.title == genre)
+        result = await self.db_session.execute(query)
+        series = result.unique().fetchall()
+        if series is not None:
+            return series

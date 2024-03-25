@@ -102,3 +102,22 @@ async def _get_films_by_genre(genre, session):
                     link=film_object.link
                 )
             return films_json
+
+
+async def _get_series_by_genre(genre, session):
+    async with session.begin():
+        series_dal = AllSeriesDAL(session)
+        series_all = await series_dal.get_series_by_genre(genre=genre)
+        series_json = dict()
+
+        if series_all is not None:
+            for series in series_all:
+                series_object = series[0]
+                series_json[series_object.id] = ShowFilmOrSeriesShort(
+                    id=series_object.id,
+                    title=series_object.title,
+                    image=series_object.image,
+                    censor_age=series_object.censor_age,
+                    link=series_object.link
+                )
+            return series_json
