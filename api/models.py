@@ -39,7 +39,7 @@ class DirectorsBase(BaseModel):
         orm_mode = True
 
 
-class ShowFilm(BaseModel):
+class ShowFilmOrSeries(BaseModel):
     id: int
     title: str
     description: str
@@ -54,26 +54,7 @@ class ShowFilm(BaseModel):
         orm_mode = True
 
 
-class ShowFilmSchema(ShowFilm):
-    actors: List[ActorsBase]
-    directors: List[DirectorsBase]
-
-
-class ShowSeries(BaseModel):
-    id: int
-    title: str
-    description: str
-    image: str
-    created_at: datetime.datetime
-    censor_age: str
-    genres: int
-    link: str
-
-    class Config:
-        orm_mode = True
-
-
-class ShowSeriesSchema(ShowSeries):
+class ShowFilmOrSeriesSchema(ShowFilmOrSeries):
     actors: List[ActorsBase]
     directors: List[DirectorsBase]
 
@@ -81,3 +62,14 @@ class ShowSeriesSchema(ShowSeries):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ShowFilmOrSeriesShort(BaseModel):
+    id: int
+    title: str
+    image: str
+    censor_age: str
+    link: str
+
+    class Config:
+        orm_mode = True

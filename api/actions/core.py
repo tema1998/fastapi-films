@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 
-from api.models import ShowFilmSchema, ShowSeriesSchema
+from api.models import ShowFilmOrSeriesSchema, ShowFilmOrSeriesShort
 from db.dals import FilmDAL, SeriesDAL, AllFilmsDAL, AllSeriesDAL
 
 
@@ -12,7 +12,7 @@ async def _get_film_by_id(film_id, session):
             film_id=film_id
         )
         if film is not None:
-            return ShowFilmSchema(
+            return ShowFilmOrSeriesSchema(
                 id=film.id,
                 title=film.title,
                 description=film.description,
@@ -33,7 +33,7 @@ async def _get_series_by_id(series_id, session):
             series_id=series_id
         )
         if series is not None:
-            return ShowSeriesSchema(
+            return ShowFilmOrSeriesSchema(
                 id=series.id,
                 title=series.title,
                 description=series.description,
@@ -56,16 +56,11 @@ async def _get_all_films(session):
         if films_all is not None:
             for film in films_all:
                 film_object = film[0]
-                films_json[film_object.id] = ShowFilmSchema(
+                films_json[film_object.id] = ShowFilmOrSeriesShort(
                     id=film_object.id,
                     title=film_object.title,
-                    description=film_object.description,
                     image=film_object.image,
-                    created_at=film_object.created_at,
                     censor_age=film_object.censor_age,
-                    actors=jsonable_encoder(film_object.actors),
-                    directors=jsonable_encoder(film_object.directors),
-                    genres=film_object.genres,
                     link=film_object.link
                 )
             return films_json
@@ -80,16 +75,11 @@ async def _get_all_series(session):
         if series_all is not None:
             for series in series_all:
                 series_object = series[0]
-                series_json[series_object.id] = ShowFilmSchema(
+                series_json[series_object.id] = ShowFilmOrSeriesShort(
                     id=series_object.id,
                     title=series_object.title,
-                    description=series_object.description,
                     image=series_object.image,
-                    created_at=series_object.created_at,
                     censor_age=series_object.censor_age,
-                    actors=jsonable_encoder(series_object.actors),
-                    directors=jsonable_encoder(series_object.directors),
-                    genres=series_object.genres,
                     link=series_object.link
                 )
             return series_json
