@@ -3,7 +3,7 @@ from sqlalchemy import Integer, select
 from sqlalchemy.orm import joinedload
 
 from api.utils import Hasher
-from db.models import User, Movie, Genre, Category
+from db.models import User, Movie, Genre, Category, Actor
 
 
 class UserDAL:
@@ -49,6 +49,13 @@ class MoviesDAL:
 
     async def get_movies_by_genre(self, genre: str):
         query = select(Movie).join(Genre).filter(Genre.title == genre)
+        result = await self.db_session.execute(query)
+        movies = result.unique().fetchall()
+        if movies is not None:
+            return movies
+
+    async def get_movies_by_actor(self, actor_id: int):
+        query = select(Movie).options(joinedload(Movie.actors)).where(Movie.actors.any(id=actor_id))
         result = await self.db_session.execute(query)
         movies = result.unique().fetchall()
         if movies is not None:

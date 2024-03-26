@@ -63,3 +63,22 @@ async def _get_movies_by_genre(genre, session):
                     link=movie_object.link
                 )
             return movies_json
+
+
+async def _get_movies_by_actor(actor_id, session):
+    async with session.begin():
+        movies_dal = MoviesDAL(session)
+        movies_all = await movies_dal.get_movies_by_actor(actor_id=actor_id)
+        movies_json = dict()
+
+        if movies_all is not None:
+            for movie in movies_all:
+                movie_object = movie[0]
+                movies_json[movie_object.id] = ShowMovieShort(
+                    id=movie_object.id,
+                    title=movie_object.title,
+                    image=movie_object.image,
+                    censor_age=movie_object.censor_age,
+                    link=movie_object.link
+                )
+            return movies_json
