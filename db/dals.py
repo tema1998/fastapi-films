@@ -3,7 +3,7 @@ from sqlalchemy import Integer, select
 from sqlalchemy.orm import joinedload
 
 from api.utils import Hasher
-from db.models import User, Film, Series, Genre
+from db.models import User, Movie, Genre, Category
 
 
 class UserDAL:
@@ -28,63 +28,28 @@ class UserDAL:
             return user_row[0]
 
 
-class FilmDAL:
+class MoviesDAL:
     def __init__(self, db_session):
         self.db_session = db_session
 
-    async def get_film_by_id(self, film_id: Integer):
-        query = select(Film).options(joinedload(Film.actors)).options(joinedload(Film.directors)).where(Film.id == film_id)
+    async def get_movie_by_id(self, movie_id: int):
+        query = select(Movie).options(joinedload(Movie.actors)).options(joinedload(Movie.directors)).join(Category).join(Genre).where(Movie.id ==movie_id)
         result = await self.db_session.execute(query)
-        film_row = result.unique().fetchone()
-        if film_row is not None:
-            return film_row[0]
+        movie_row = result.unique().fetchone()
+        if movie_row is not None:
+            return movie_row[0]
 
-
-class SeriesDAL:
-    def __init__(self, db_session):
-        self.db_session = db_session
-
-    async def get_series_by_id(self, series_id: Integer):
-        query = select(Series).options(joinedload(Series.actors)).options(joinedload(Series.directors)).where(Series.id == series_id)
+    async def get_movies_by_category(self, category: str):
+        query = (select(Movie).options(joinedload(Movie.actors)).options(joinedload(Movie.directors)).join(Category).
+                 filter(Category.title == category))
         result = await self.db_session.execute(query)
-        series_row = result.unique().fetchone()
-        if series_row is not None:
-            return series_row[0]
+        movies = result.unique().fetchall()
+        if movies is not None:
+            return movies
 
-
-class AllFilmsDAL:
-    def __init__(self, db_session):
-        self.db_session = db_session
-
-    async def get_films(self):
-        query = select(Film).options(joinedload(Film.actors)).options(joinedload(Film.directors))
+    async def get_movies_by_genre(self, genre: str):
+        query = select(Movie).join(Genre).filter(Genre.title == genre)
         result = await self.db_session.execute(query)
-        films = result.unique().fetchall()
-        if films is not None:
-            return films
-
-    async def get_films_by_genre(self, genre: str):
-        query = select(Film).join(Genre).filter(Genre.title == genre)
-        result = await self.db_session.execute(query)
-        films = result.unique().fetchall()
-        if films is not None:
-            return films
-
-
-class AllSeriesDAL:
-    def __init__(self, db_session):
-        self.db_session = db_session
-
-    async def get_series(self):
-        query = select(Series).options(joinedload(Series.actors)).options(joinedload(Series.directors))
-        result = await self.db_session.execute(query)
-        series = result.unique().fetchall()
-        if series is not None:
-            return series
-
-    async def get_series_by_genre(self, genre: str):
-        query = select(Series).join(Genre).filter(Genre.title == genre)
-        result = await self.db_session.execute(query)
-        series = result.unique().fetchall()
-        if series is not None:
-            return series
+        movies = result.unique().fetchall()
+        if movies is not None:
+            return movies

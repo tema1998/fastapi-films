@@ -39,14 +39,30 @@ class DirectorsBase(BaseModel):
         orm_mode = True
 
 
-class ShowFilmOrSeries(BaseModel):
+class CategoryBase(BaseModel):
     id: int
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
+class GenreBase(BaseModel):
+    id: int
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
+class ShowMovie(BaseModel):
+    id: int
+    category: int
     title: str
     description: str
     image: str
     created_at: datetime.datetime
     censor_age: str
-
     genres: int
     link: str
 
@@ -54,7 +70,7 @@ class ShowFilmOrSeries(BaseModel):
         orm_mode = True
 
 
-class ShowFilmOrSeriesSchema(ShowFilmOrSeries):
+class ShowMovieSchema(ShowMovie):
     actors: List[ActorsBase]
     directors: List[DirectorsBase]
 
@@ -64,7 +80,7 @@ class Token(BaseModel):
     token_type: str
 
 
-class ShowFilmOrSeriesShort(BaseModel):
+class ShowMovieShort(BaseModel):
     id: int
     title: str
     image: str

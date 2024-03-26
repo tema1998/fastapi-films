@@ -26,61 +26,41 @@ class AuthToken(Base):
     created_at = Column(String, default=datetime.utcnow())
 
 
-film_actor = Table(
-    'film_actor',
+movie_actor = Table(
+    'movie_actor',
     Base.metadata,
-    Column('film_id', Integer, ForeignKey('films.id')),
+    Column('movie_id', Integer, ForeignKey('movies.id')),
     Column('actor_id', Integer, ForeignKey('actors.id'))
 )
 
-series_actor = Table(
-    'series_actor',
-    Base.metadata,
-    Column('series_id', Integer, ForeignKey('series.id')),
-    Column('actor_id', Integer, ForeignKey('actors.id'))
-)
 
-film_director = Table(
-    'film_director',
+movie_director = Table(
+    'movie_director',
     Base.metadata,
-    Column('film_id', Integer, ForeignKey('films.id')),
-    Column('director_id', Integer, ForeignKey('directors.id'))
-)
-
-series_director = Table(
-    'series_director',
-    Base.metadata,
-    Column('series_id', Integer, ForeignKey('series.id')),
+    Column('movie_id', Integer, ForeignKey('movies.id')),
     Column('director_id', Integer, ForeignKey('directors.id'))
 )
 
 
-class Film(Base):
-    __tablename__ = 'films'
+class Category(Base):
+    __tablename__ = 'categories'
 
     id = Column(Integer, primary_key=True)
+    title = Column(String)
+
+
+class Movie(Base):
+    __tablename__ = 'movies'
+
+    id = Column(Integer, primary_key=True)
+    category = Column(Integer, ForeignKey('categories.id'))
     title = Column(String)
     image = Column(String)
     description = Column(String)
     created_at = Column(DateTime(timezone=True), default=func.now())
     censor_age = Column(String)
-    actors = relationship('Actor', secondary=film_actor, backref='films_of_actor')
-    directors = relationship('Director', secondary=film_director, backref='films_of_director')
-    genres = Column(Integer, ForeignKey('genres.id'))
-    link = Column(String)
-
-
-class Series(Base):
-    __tablename__ = 'series'
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    image = Column(String)
-    description = Column(String)
-    created_at = Column(DateTime(timezone=True), default=func.now())
-    censor_age = Column(String)
-    actors = relationship('Actor', secondary=series_actor, backref='series_of_actor')
-    directors = relationship('Director', secondary=series_director, backref='series_of_director')
+    actors = relationship('Actor', secondary=movie_actor, backref='movies_of_actor')
+    directors = relationship('Director', secondary=movie_director, backref='movies_of_director')
     genres = Column(Integer, ForeignKey('genres.id'))
     link = Column(String)
 
@@ -91,8 +71,7 @@ class Actor(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    starred_in_films = relationship('Film', secondary=film_actor, backref='film_actors')
-    starred_in_series = relationship('Series', secondary=series_actor, backref='series_actors')
+    starred_in_movies = relationship('Movie', secondary=movie_actor, backref='movie_actors')
 
 
 class Director(Base):
@@ -101,8 +80,7 @@ class Director(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    made_films = relationship('Film', secondary=film_director, backref='film_directors')
-    made_series = relationship('Series', secondary=series_director, backref='series_directors')
+    made_movies = relationship('Movie', secondary=movie_director, backref='movie_directors')
 
 
 class Genre(Base):
