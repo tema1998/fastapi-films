@@ -17,6 +17,7 @@ async def _get_movie_by_id(movie_id, session):
                 category=movie.category,
                 title=movie.title,
                 description=movie.description,
+                imdb_rating=movie.imdb_rating,
                 image=movie.image,
                 created_at=movie.created_at,
                 censor_age=movie.censor_age,

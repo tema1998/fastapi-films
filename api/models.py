@@ -60,6 +60,7 @@ class ShowMovie(BaseModel):
     category: int
     title: str
     description: str
+    imdb_rating: float
     image: str
     created_at: datetime.datetime
     censor_age: str
