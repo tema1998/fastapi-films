@@ -60,3 +60,11 @@ class MoviesDAL:
         movies = result.unique().fetchall()
         if movies is not None:
             return movies
+
+    async def get_genres(self):
+        query = select(Genre)
+        result = await self.db_session.execute(query)
+        genres = result.unique().fetchall()
+        if genres is not None:
+            return genres
+

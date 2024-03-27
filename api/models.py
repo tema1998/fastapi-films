@@ -89,3 +89,12 @@ class ShowMovieShort(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ShowGenres(BaseModel):
+    id: int
+    title: str
+    description: str
+
+    class Config:
+        orm_mode = True

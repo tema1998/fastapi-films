@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 
-from api.models import ShowMovieSchema, ShowMovieShort
+from api.models import ShowMovieSchema, ShowMovieShort, ShowGenres
 from db.dals import MoviesDAL
 
 
@@ -82,3 +82,20 @@ async def _get_movies_by_actor(actor_id, session):
                     link=movie_object.link
                 )
             return movies_json
+
+
+async def _get_genres(session):
+    async with session.begin():
+        movies_dal = MoviesDAL(session)
+        genres_all = await movies_dal.get_genres()
+        genres_json = dict()
+
+        if genres_all is not None:
+            for genre in genres_all:
+                genre_object = genre[0]
+                genres_json[genre_object.id] = ShowGenres(
+                    id=genre_object.id,
+                    title=genre_object.title,
+                    description=genre_object.description,
+                )
+            return genres_json
